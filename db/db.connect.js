@@ -19,15 +19,15 @@ async function run() {
     const videos = database.collection('videos'); // selecting the collection
     
     // Add a document to videos
-    const newVideo = { name: "japani joota",  price: 1500 }
+    const newVideo = { name: "japani video",  price: 1500 }
     const result = await videos.insertOne(newVideo);
     console.log(
       `${result.insertedCount} documents were inserted with the _id: ${result.insertedId}`,
     );
 
     
-    // Query for a product that has the name 'japani joota'
-    const query = { name: 'japani joota' };
+    // Query for a product that has the name 'japani video'
+    const query = { name: 'japani video' };
     const video = await videos.findOne(query);
     console.log("found one", video);
 
