@@ -18,7 +18,7 @@ const UserSchema = new Schema({
     {videoId : {type: Schema.Types.ObjectId, ref: 'Video'}}
   ],
 
-  playList: [
+  playlists: [
     {
       name : {type: String},
       videos: [

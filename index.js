@@ -16,6 +16,10 @@ const { addVideosToDB } = require("./models/video.model");
 const { addAuthToDB } = require("./models/auth.model");
 const { addUserToDB } = require("./models/user.model");
 
+const auth = require("./routes/auth.router");
+const user = require("./routes/user.router");
+const videos = require("./routes/videos.router");
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -25,6 +29,10 @@ app.use(cors({origin: "*"}));
 app.use(bodyParser.json());
 
 initialiseDBConnection();
+
+app.use('/videos', videos);
+app.use('/auth', auth);
+app.use('/user', authVerify, user);
 
 app.get("/", (req, res) => {
   res.json({holaaa: "amigooo!"})
