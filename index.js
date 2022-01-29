@@ -12,6 +12,10 @@ const { authVerify } = require("./middlewares/auth-handler.middleware")
 const { errorHandler } = require("./middlewares/error-handler.middleware")
 const { routeNotFound } = require("./middlewares/route-not-found.middleware")
 
+const { addVideosToDB } = require("./models/video.model");
+const { addAuthToDB } = require("./models/auth.model");
+const { addUserToDB } = require("./models/user.model");
+
 
 const PORT = process.env.PORT || 5000;
 
