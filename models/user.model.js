@@ -19,12 +19,12 @@ const UserSchema = new Schema({
   ],
 
   playList: [
-    [  {videoId:  {type: Schema.Types.ObjectId, ref: 'Video'}}  ]
-
-  ]
-
-
-
+    {
+      name : {type: String},
+      videos: [
+        { videoId: { type: Schema.Types.ObjectId, ref: 'Video' }}]
+    }
+  ],
 }, {
     timestamps: { currentTime: () => Math.floor(Date.now() / 1000) }
    
