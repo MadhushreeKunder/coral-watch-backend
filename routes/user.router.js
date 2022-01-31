@@ -25,14 +25,14 @@ router.get("/", async (req, res) => {
     if (!user) {
       return res.status(401).json({ success: false, errorMessage: "User not found" });
     } else {
-      const { playlists } = await user.populate('playlists.videos.videoId');
-      const { liked } = await user.populate('liked.videoId');
-      const { watchLater } = await user.populate('watchLater.videoId');
-      const { history } = await user.populate('history.videoId');
+      const { playlists } = await user.populate('playlists.videos.videoId').execPopulate();
+      const { liked } = await user.populate('liked.videoId').execPopulate();
+      const { watchLater } = await user.populate('watchLater.videoId').execPopulate();
+      const { history } = await user.populate('history.videoId').execPopulate();
 
       const populatedUser = { ...user, playlists, liked, watchLater, history };
 
-      return res.status(200).json({ userActivity: populatedUser.toJSON(), success: true, message: "User Activity retrieved successfully" })
+      return res.status(200).json({ user: populatedUser._doc, success: true, message: "User Activity retrieved successfully" })
     }
   } catch (error) {
     res.status(500).json({ success: false, errorMessage: "Error while retrieving userDetails", errorMessage: error.message })
@@ -91,7 +91,7 @@ router.route("/playlists/:playlistId")
         if (playlist) {
           const updatedPlaylist = extend(playlist, updatedPlaylist);
           await user.save();
-          const { playlists } = await user.populate('playlists.video.videoId');
+          const { playlists } = await user.populate('playlists.video.videoId').execPopulate();
           const updatedPlaylistNew = playlists.find(item => item._id === playlistId);
           return res.status(201).json({ playlist: updatedPlaylistNew, success: true, message: "successfully updated playlist" })
         }
@@ -159,8 +159,8 @@ router.route("/liked")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const updatedLiked = await user.populate('liked.videoId');
-        return res.json({ liked: updatedLiked.liked, success: true })
+        const updatedObj = await user.populate('liked.videoId').execPopulate();
+        return res.json({ liked: updatedObj.liked, success: true })
       }
     }
     catch{
@@ -171,14 +171,14 @@ router.route("/liked")
     try {
       const { userId } = req.user;
       const { videoId } = req.body;
-      const user = await User.find(userId);
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
         user.liked.push({ videoId: videoId });
         await user.save();
-        const updatedLiked = await user.populate('liked.videoId');
-        const newVideo = updatedLiked.liked.find(item => item.videoId._id === videoId);
+        const updatedObj = await user.populate('liked.videoId').execPopulate();
+        const newVideo = updatedObj.liked.find(item => item.videoId._id === videoId);
         return res.status(201).json({ addedLiked: newVideo, success: true, message: "Successfully liked video" })
       }
     }
@@ -192,7 +192,7 @@ router.route("/liked/:videoId")
     try {
       const { userId } = req.user;
       const { videoId } = req.params;
-      const user = await User.find(userId);
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
@@ -221,7 +221,7 @@ router.route("/history")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const updatedHistory = await user.populate('history.videoId');
+        const updatedHistory = await user.populate('history.videoId').execPopulate();
         return res.json({ history: updatedHistory.history, success: true })
       }
     }
@@ -233,13 +233,13 @@ router.route("/history")
     try {
       const { userId } = req.user;
       const { videoId } = req.body;
-      const user = await User.find(userId);
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
         user.history.push({ videoId: videoId });
         await user.save();
-        const updatedHistory = await user.populate('history.videoId');
+        const updatedHistory = await user.populate('history.videoId').execPopulate();
         const newVideo = updatedHistory.history.find(item => item.videoId._id === videoId);
         return res.status(201).json({ addedHistory: newVideo, success: true, message: "Successfully history video" })
       }
@@ -269,7 +269,7 @@ router.route("/history/:videoId")
     try {
       const { userId } = req.user;
       const { videoId } = req.params;
-      const user = await User.find(userId);
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
@@ -297,7 +297,7 @@ router.route("/watchLater")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const updatedWatchLater = await user.populate('watchLater.videoId');
+        const updatedWatchLater = await user.populate('watchLater.videoId').execPopulate();
         return res.json({ watchLater: updatedWatchLater.watchLater, success: true })
       }
     }
@@ -309,13 +309,13 @@ router.route("/watchLater")
     try {
       const { userId } = req.user;
       const { videoId } = req.body;
-      const user = await User.find(userId);
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
         user.watchLater.push({ videoId: videoId });
         await user.save();
-        const updatedWatchLater = await user.populate('watchLater.videoId');
+        const updatedWatchLater = await user.populate('watchLater.videoId').execPopulate();
         const newVideo = updatedWatchLater.watchLater.find(item => item.videoId._id === videoId);
         return res.status(201).json({ addedWatchLater: newVideo, success: true, message: "Successfully watchLater video" })
       }
@@ -330,7 +330,7 @@ router.route("/watchLater/:videoId")
     try {
       const { userId } = req.user;
       const { videoId } = req.params;
-      const user = await User.find(userId);
+      const user = await User.findById(userId);
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {

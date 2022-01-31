@@ -7,22 +7,22 @@ const UserSchema = new Schema({
   _id: { type: Schema.Types.ObjectId, ref: 'Auth' },
   
   liked: [
-    {videoId : {type: Schema.Types.ObjectId, ref: 'Video'}}
+    {videoId : {type: String, ref: 'Video'}}
   ], 
 
   history: [
-     {videoId : {type: Schema.Types.ObjectId, ref: 'Video'}}
+     {videoId : {type: String, ref: 'Video'}}
   ],
 
   watchLater: [
-    {videoId : {type: Schema.Types.ObjectId, ref: 'Video'}}
+    {videoId : {type: String, ref: 'Video'}}
   ],
 
   playlists: [
     {
       name : {type: String},
       videos: [
-        { videoId: { type: Schema.Types.ObjectId, ref: 'Video' }}]
+        { videoId: { type: String, ref: 'Video' }}]
     }
   ],
 }, {

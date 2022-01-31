@@ -35,8 +35,11 @@ app.use('/auth', auth);
 app.use('/user', authVerify, user);
 
 app.get("/", (req, res) => {
-  res.json({holaaa: "amigooo!"})
+  res.json({hello: "Welcome to coral-watch!"})
 })
+
+app.use(errorHandler);
+app.use(routeNotFound);
 
 app.listen(PORT , () => {
   console.log("Listening on Port:", PORT)

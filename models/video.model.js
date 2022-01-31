@@ -3,16 +3,16 @@ require('mongoose-type-url');
 
 const VideoSchema = new mongoose.Schema({
 
-  id: {
-    type: Number,
+  _id: {
+    type: String,
     required: "Cannot enter a video without Video id, please enter id",
-    unique: [true, "Custom unique failed"]
+    // unique: [true, "Custom unique failed"]
   },
 
-  videoLinkId : {
-    type: String,
-    required: "Cannot enter a video without VideoLinkId, please enter VideoLinkId"
-  },
+  // videoLinkId : {
+  //   type: String,
+  //   required: "Cannot enter a video without VideoLinkId, please enter VideoLinkId"
+  // },
 
   videoTitle: {
     type: String,
