@@ -14,7 +14,7 @@ const UserSchema = new Schema({
      {videoId : {type: String, ref: 'Video'}}
   ],
 
-  watchLater: [
+  watchlater: [
     {videoId : {type: String, ref: 'Video'}}
   ],
 

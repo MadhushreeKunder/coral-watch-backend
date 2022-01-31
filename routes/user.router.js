@@ -27,10 +27,10 @@ router.get("/", async (req, res) => {
     } else {
       const { playlists } = await user.populate('playlists.videos.videoId').execPopulate();
       const { liked } = await user.populate('liked.videoId').execPopulate();
-      const { watchLater } = await user.populate('watchLater.videoId').execPopulate();
+      const { watchlater } = await user.populate('watchlater.videoId').execPopulate();
       const { history } = await user.populate('history.videoId').execPopulate();
 
-      const populatedUser = { ...user, playlists, liked, watchLater, history };
+      const populatedUser = { ...user, playlists, liked, watchlater, history };
 
       return res.status(200).json({ user: populatedUser._doc, success: true, message: "User Activity retrieved successfully" })
     }
@@ -179,7 +179,7 @@ router.route("/liked")
         await user.save();
         const updatedObj = await user.populate('liked.videoId').execPopulate();
         const newVideo = updatedObj.liked.find(item => item.videoId._id === videoId);
-        return res.status(201).json({ addedLiked: newVideo, success: true, message: "Successfully liked video" })
+        return res.status(201).json({ addedVideo: newVideo, success: true, message: "Successfully liked video" })
       }
     }
     catch (error) {
@@ -221,8 +221,8 @@ router.route("/history")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const updatedHistory = await user.populate('history.videoId').execPopulate();
-        return res.json({ history: updatedHistory.history, success: true })
+        const updatedObj = await user.populate('history.videoId').execPopulate();
+        return res.json({ history: updatedObj.history, success: true })
       }
     }
     catch{
@@ -239,9 +239,9 @@ router.route("/history")
       } else {
         user.history.push({ videoId: videoId });
         await user.save();
-        const updatedHistory = await user.populate('history.videoId').execPopulate();
-        const newVideo = updatedHistory.history.find(item => item.videoId._id === videoId);
-        return res.status(201).json({ addedHistory: newVideo, success: true, message: "Successfully history video" })
+        const updatedObj = await user.populate('history.videoId').execPopulate();
+        const newVideo = updatedObj.history.find(item => item.videoId._id === videoId);
+        return res.status(201).json({ addedVideo: newVideo, success: true, message: "Successfully history video" })
       }
     }
     catch (error) {
@@ -289,7 +289,7 @@ router.route("/history/:videoId")
 
 
   
-router.route("/watchLater")
+router.route("/watchlater")
   .get(async (req, res) => {
     try {
       const { userId } = req.user;
@@ -297,12 +297,12 @@ router.route("/watchLater")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const updatedWatchLater = await user.populate('watchLater.videoId').execPopulate();
-        return res.json({ watchLater: updatedWatchLater.watchLater, success: true })
+        const updatedObj = await user.populate('watchlater.videoId').execPopulate();
+        return res.json({ watchlater: updatedObj.watchlater, success: true })
       }
     }
     catch{
-      res.status(500).json({ success: false, errorMessage: "Error while retrieving watchLater videos", errorMessage: error.message })
+      res.status(500).json({ success: false, errorMessage: "Error while retrieving watchlater videos", errorMessage: error.message })
     }
   })
   .post(async (req, res) => {
@@ -313,19 +313,19 @@ router.route("/watchLater")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        user.watchLater.push({ videoId: videoId });
+        user.watchlater.push({ videoId: videoId });
         await user.save();
-        const updatedWatchLater = await user.populate('watchLater.videoId').execPopulate();
-        const newVideo = updatedWatchLater.watchLater.find(item => item.videoId._id === videoId);
-        return res.status(201).json({ addedWatchLater: newVideo, success: true, message: "Successfully watchLater video" })
+        const updatedObj = await user.populate('watchlater.videoId').execPopulate();
+        const newVideo = updatedObj.watchlater.find(item => item.videoId._id === videoId);
+        return res.status(201).json({ addedVideo: newVideo, success: true, message: "Successfully watchlater video" })
       }
     }
     catch (error) {
-      res.status(500).json({ success: false, message: "Error while adding watchLater video", errMessage: error.message })
+      res.status(500).json({ success: false, message: "Error while adding watchlater video", errMessage: error.message })
     }
   })
 
-router.route("/watchLater/:videoId")
+router.route("/watchlater/:videoId")
   .delete(async (req, res) => {
     try {
       const { userId } = req.user;
@@ -334,17 +334,17 @@ router.route("/watchLater/:videoId")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const video = user.watchLater.find(item => item.videoId === videoId)
+        const video = user.watchlater.find(item => item.videoId === videoId)
         if (video) {
-          user.watchLater.pull({ _id: video._id });
+          user.watchlater.pull({ _id: video._id });
           await user.save();
-          return res.status(200).json({ deletedVideo: video, success: true, message: "Successfully unwatchLater video" });
+          return res.status(200).json({ deletedVideo: video, success: true, message: "Successfully unwatchlater video" });
         } else {
           return res.status(404).json({ sucess: false, message: "No Video associated with provided video Id" })
         }
       }
     } catch (error) {
-      res.status(500).json({ success: false, message: "Error while removing watchLater video", errMessage: error.message })
+      res.status(500).json({ success: false, message: "Error while removing watchlater video", errMessage: error.message })
     }
   })
 

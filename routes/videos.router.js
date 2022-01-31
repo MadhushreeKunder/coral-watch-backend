@@ -25,24 +25,24 @@ router.route("/")
 
 
 
-router.param('videoId', async (req, res, next, videoId) => {
-  try {
-    const video = await Video.findById(videoId);
-    if (!video) {
-      return res.status(400).json({success: false , message: "Video not found"})
-    }
-    req.video = video;
-    next();
-  } catch {
-    res.status(400).json({success: false, message: "Could not retrieve video"})
-  }
-})
+// router.param('videoId', async (req, res, next, videoId) => {
+//   try {
+//     const video = await Video.findById(videoId);
+//     if (!video) {
+//       return res.status(400).json({success: false , message: "Video not found"})
+//     }
+//     req.video = video;
+//     next();
+//   } catch {
+//     res.status(400).json({success: false, message: "Could not retrieve video"})
+//   }
+// })
 
 
 
 router.route("/:id")
 .get(async(req, res) => {
-  const { video } = req
+  // const { video } = req
   const { id } = req.params;
 
   try {
