@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 
 initialiseDBConnection();
 
-app.use('/videos', videos);
+app.use('/video', videos);
 app.use('/auth', auth);
 app.use('/user', authVerify, user);
 

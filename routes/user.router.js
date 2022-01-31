@@ -13,8 +13,9 @@ router.param('userId', async (req, res, next, userId) => {
     }
     req.user = user;
     next();
-  } catch {
-    res.status(401).json({ success: false, message: "Could not retrieve user" })
+  } catch (error) {
+
+    res.status(401).json({ success: false, message: "Could not retrieve user", errmessage: error.message })
   }
 })
 
@@ -89,9 +90,9 @@ router.route("/playlists/:playlistId")
       } else {
         const playlist = user.playlists.find(item => item._id === playlistId)
         if (playlist) {
-          const updatedPlaylist = extend(playlist, updatedPlaylist);
+          const updatedPlaylist = extend(playlist, updatePlaylist);
           await user.save();
-          const { playlists } = await user.populate('playlists.video.videoId').execPopulate();
+          const { playlists } = await user.populate('playlists.videos.videoId').execPopulate();
           const updatedPlaylistNew = playlists.find(item => item._id === playlistId);
           return res.status(201).json({ playlist: updatedPlaylistNew, success: true, message: "successfully updated playlist" })
         }

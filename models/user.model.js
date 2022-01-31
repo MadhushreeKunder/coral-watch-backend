@@ -32,13 +32,13 @@ const UserSchema = new Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-const addUserToDB = () => {
-  users.forEach(async (user) => {
-    const NewUser = new User(user);
-    const savedUser = await NewUser.save();
-    console.log(savedUser);
-  })
-}
+// const addUserToDB = () => {
+//   users.forEach(async (user) => {
+//     const NewUser = new User(user);
+//     const savedUser = await NewUser.save();
+//     console.log(savedUser);
+//   })
+// }
 
 
-module.exports = { User, addUserToDB };
+module.exports = { User };

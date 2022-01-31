@@ -12,16 +12,16 @@ router.route("/")
     res.status(500).json({ success: false, message: "unable to get videos", errMessage: err.message})
   }
 })
-.post(async (req, res) => {
-  try {
-    const video = req.body
-    const NewVideo = new Video(video);
-    const savedVideo = await NewVideo.save();
-    res.status(201).json({ success: true, video: savedVideo })
-  } catch(err) {
-    res.status(500).json({ success: false, message: "unable to add videos", errMessage: err.message})
-  }
-})
+// .post(async (req, res) => {
+//   try {
+//     const video = req.body
+//     const NewVideo = new Video(video);
+//     const savedVideo = await NewVideo.save();
+//     res.status(201).json({ success: true, video: savedVideo })
+//   } catch(err) {
+//     res.status(500).json({ success: false, message: "unable to add videos", errMessage: err.message})
+//   }
+// })
 
 
 
@@ -35,7 +35,7 @@ router.route("/")
 //     next();
 //   } catch {
 //     res.status(400).json({success: false, message: "Could not retrieve video"})
-//   }
+//   }  
 // })
 
 
@@ -56,23 +56,23 @@ router.route("/:id")
   }
 
 })
-.post( async(req, res) => {
-  let { video } = req;
-  const videoUpdate = req.body;
+// .post( async(req, res) => {
+//   let { video } = req;
+//   const videoUpdate = req.body;
 
-  video = extend(video, videoUpdate);
-  video.updated = Date.now();
-  console.log("date: ", video.updated);
-  video = await video.save();
+//   video = extend(video, videoUpdate);
+//   video.updated = Date.now();
+//   console.log("date: ", video.updated);
+//   video = await video.save();
 
-  res.json({success: true, video})
+//   res.json({success: true, video})
  
-})
-.delete( async (req, res) =>  {
-  let { video } = req;
-  await video.remove();
-  res.json({success: true, video})
-})
+// })
+// .delete( async (req, res) =>  {
+//   let { video } = req;
+//   await video.remove();
+//   res.json({success: true, video})
+// })
 
 
 module.exports = router

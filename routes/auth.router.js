@@ -44,7 +44,7 @@ router.post("/signup", async (req, res) => {
       const token = generateToken(savedUser._id);
       const NewUserDetails = new User({
         _id: NewUser._id,
-        liked: [], history: [], watchLater: [], playlists: []
+        liked: [], history: [], watchlater: [], playlists: []
       });
 
       await NewUserDetails.save();
