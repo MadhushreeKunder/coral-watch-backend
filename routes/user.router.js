@@ -42,112 +42,116 @@ router.get("/", async (req, res) => {
 
 router.route("/playlists")
   .get(async (req, res) => {
-    try {
-      const { userId } = req.user;
-      const user = await User.findById(userId);
+    // try {
+    const { userId } = req.user;
+    const user = await User.findById(userId);
 
-      if (!user) {
-        return res.status(401).json({ success: false, message: "User not found" })
-      } else {
-        return res.json({ playlists: user.playlists, success: true })
-      }
-
-    } catch (error) {
-      res.status(500).json({ success: false, message: "Error while retrieving playlists", errMessage: error.message })
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" })
+    } else {
+      return res.json({ playlists: user.playlists, success: true })
     }
+
+    // } catch (error) {
+    //   res.status(500).json({ success: false, message: "Error while retrieving playlists", errMessage: error.message })
+    // }
   })
   .post(async (req, res) => {
-    try {
-      const { userId } = req.user;
-      const { name } = req.body;
-      const user = await User.findById(userId);
+    // try {
+    const { name } = req.body;
+    const { userId } = req.user;
 
-      if (!user) {
-        return res.status(401).json({ success: false, message: "User not found" })
-      } else {
-        user.playlists.push({ name: name, videos: [] });
-        await user.save();
-        const newPlaylist = user.playlists.find((item) => item.name === name);
-        return res.status(201).json({ playlist: newPlaylist, success: true, message: "Playlist added succesfully" })
-      }
+    const user = await User.findById(userId);
 
-    } catch (error) {
-      res.status(500).json({ success: false, message: "Error while adding playlists", errMessage: error.message })
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" })
+    } else {
+      user.playlists.push({ name: name, videos: [] });
+      await user.save();
+      const newPlaylist = user.playlists.find((item) => item.name === name);
+      return res.status(201).json({ playlist: newPlaylist, success: true, message: "Playlist added succesfully" })
     }
+
+    // } catch (error) {
+    //   res.status(500).json({ success: false, message: "Error while adding playlists", errMessage: error.message })
+    // }
   })
 
 
 router.route("/playlists/:playlistId")
   .post(async (req, res) => {
-    try {
-      const { userId } = req.user;
-      const { playlistId } = req.params;
-      const updatePlaylist = req.body;
+    // try {
+    const { playlistId } = req.params;
+    const updatePlaylist = req.body;
 
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(401).json({ success: false, message: "User not found" })
-      } else {
-        const playlist = user.playlists.find(item => item._id === playlistId)
-        if (playlist) {
-          const updatedPlaylist = extend(playlist, updatePlaylist);
-          await user.save();
-          const { playlists } = await user.populate('playlists.videos.videoId').execPopulate();
-          const updatedPlaylistNew = playlists.find(item => item._id === playlistId);
-          return res.status(201).json({ playlist: updatedPlaylistNew, success: true, message: "successfully updated playlist" })
-        }
+    const { userId } = req.user;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" })
+    } else {
+      const playlist = user.playlists.find(item => item._id == playlistId)
+
+      if (playlist) {
+        const updatedPlaylist = extend(playlist, updatePlaylist);
+        await user.save();
+
+        const { playlists } = await user.populate('playlists.videos.videoId').execPopulate();
+        const populatedPlaylist = playlists.find(item => item._id == playlistId);
+        return res.status(201).json({ playlist: populatedPlaylist, success: true, message: "successfully updated playlist" })
       }
-    } catch (error) {
-      res.status(500).json({ success: false, message: "Error while updating playlist" })
     }
+    // } catch (error) {
+    //   res.status(500).json({ success: false, message: "Error while updating playlist" })
+    // }
   })
   .delete(async (req, res) => {
-    try {
-      const { userId } = req.user;
-      const { playlistId } = req.params;
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(401).json({ success: false, message: "User not found" })
-      } else {
+    // try {
+    const { userId } = req.user;
+    const { playlistId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" })
+    } else {
 
-        const playlist = user.playlists.find(item => item._id === playlistId)
-        if (playlist) {
-          user.playlists.pull({ _id: playlist._id });
-          await user.save();
-          return res.status(200).json({ playlist: playlist, success: true, message: "Succesfully deleted playlist" })
-        } else {
-          return res.status(404).json({ success: false, message: "No video associated with provided videoId" })
-        }
+      const playlist = user.playlists.find(item => item._id == playlistId)
+      if (playlist) {
+        user.playlists.pull({ _id: playlist._id });
+        await user.save();
+        return res.status(200).json({ playlist: playlist, success: true, message: "Succesfully deleted playlist" })
+      } else {
+        return res.status(404).json({ success: false, message: "No video associated with provided videoId" })
       }
-    } catch (error) {
-      res.status(500).json({ success: false, message: "Error while deleting playlist" })
     }
+    // } catch (error) {
+    //   res.status(500).json({ success: false, message: "Error while deleting playlist" })
+    // }
   })
 
 
 
 router.route("/playlists/:playlistId/:videoId")
   .delete(async (req, res) => {
-    try {
-      const { playlistId, videoId } = req.params;
-      const { userId } = req.user;
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(401).json({ success: false, message: "User not found" })
-      }
-      else {
-        const playlist = user.playlists.find(item => item._id === playlistId);
-        if (playlist) {
-          const updatedPlaylist = playlist.videos.filter((item) => item.videoId !== videoId);
-          const updatedPlaylistNew = extend(playlist, { videos: updatedPlaylist })
-          await user.save();
-          return res.status(200).json({ playlists: updatedPlaylistNew, success: true, message: "Successfully deleted video from playlist" })
-        }
+    // try {
+    const { playlistId, videoId } = req.params;
+    const { userId } = req.user;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" })
+    }
+    else {
+      const playlist = user.playlists.find(item => item._id == playlistId);
+      if (playlist) {
+        const updatedVideoPlaylist = playlist.videos.filter((item) => item.videoId !== videoId);
+        const updatedPlaylist = extend(playlist, { videos: updatedVideoPlaylist })
+        await user.save();
+        return res.status(200).json({ playlists: updatedPlaylist, success: true, message: "Successfully deleted video from playlist" })
       }
     }
-    catch (error) {
-      res.status(500).json({ success: false, message: "Error while deleting video from playlist" })
-    }
+    // }
+    // catch (error) {
+    //   res.status(500).json({ success: false, message: "Error while deleting video from playlist" })
+    // }
   })
 
 
@@ -197,7 +201,7 @@ router.route("/liked/:videoId")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const video = user.liked.find(item => item.videoId === videoId)
+        const video = user.liked.find(item => item.videoId == videoId)
         if (video) {
           user.liked.pull({ _id: video._id });
           await user.save();
@@ -251,17 +255,17 @@ router.route("/history")
   })
   .delete(async (req, res) => {
     try {
-      const { userId} = req.user;
+      const { userId } = req.user;
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(401).json({ success: false, message: "User not found"})
+        return res.status(401).json({ success: false, message: "User not found" })
       } else {
         user.history = [];
         await user.save();
-        return res.status(200).json( {history: user.history, succes: true, message: "Successfully deleted history"})
+        return res.status(200).json({ history: user.history, succes: true, message: "Successfully deleted history" })
       }
     } catch (error) {
-       res.status(500).json({ success: false, message: "Error while deleting history", errMessage: error.message })
+      res.status(500).json({ success: false, message: "Error while deleting history", errMessage: error.message })
     }
   })
 
@@ -274,7 +278,7 @@ router.route("/history/:videoId")
       if (!user) {
         return res.status(401).json({ success: false, message: "User not found" })
       } else {
-        const video = user.history.find(item => item.videoId === videoId)
+        const video = user.history.find(item => item.videoId == videoId)
         if (video) {
           user.history.pull({ _id: video._id });
           await user.save();
@@ -289,7 +293,7 @@ router.route("/history/:videoId")
   })
 
 
-  
+
 router.route("/watchlater")
   .get(async (req, res) => {
     try {
