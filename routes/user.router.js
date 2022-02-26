@@ -97,7 +97,7 @@ router.route("/playlists/:playlistId")
         await user.save();
 
         const { playlists } = await user.populate('playlists.videos.videoId').execPopulate();
-        const populatedPlaylist = playlists.find(item => item._id == playlistId);
+        const populatedPlaylist = playlists.find(item => item._id == playlistId);  
         return res.status(201).json({ playlist: populatedPlaylist, success: true, message: "successfully updated playlist" })
       }
     }
@@ -130,9 +130,9 @@ router.route("/playlists/:playlistId")
 
 
 
-router.route("/playlists/:playlistId/:videoId")
+router.route('/playlists/:playlistId/:videoId')
   .delete(async (req, res) => {
-    // try {
+    try {
     const { playlistId, videoId } = req.params;
     const { userId } = req.user;
     const user = await User.findById(userId);
@@ -148,10 +148,10 @@ router.route("/playlists/:playlistId/:videoId")
         return res.status(200).json({ playlists: updatedPlaylist, success: true, message: "Successfully deleted video from playlist" })
       }
     }
-    // }
-    // catch (error) {
-    //   res.status(500).json({ success: false, message: "Error while deleting video from playlist" })
-    // }
+    }
+    catch (error) {
+      res.status(500).json({ success: false, message: "Error while deleting video from playlist" })
+    }
   })
 
 
